@@ -43,7 +43,6 @@ func combineSegmentsToFile(dir, out string, segments *array.Array[parser.Segment
 	for i := 0; i < segments.Length(); i++ {
 		seg := segments.Lookup(i)
 		name := path.Join(dir, seg.SegmentName)
-		fmt.Println(name)
 		size, err := toolbox.DownloadFile(name, seg.SegmentURL, nil)
 		if err != nil {
 			log.Println(err)
