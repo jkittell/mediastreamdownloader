@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/jkittell/array"
 	"github.com/jkittell/mediastreamparser/parser"
 	"github.com/jkittell/toolbox"
@@ -109,8 +108,7 @@ func Run(dir, playlistURL string) *array.Array[Stream] {
 		}
 	}
 
-	workingDir := path.Join(dir, uuid.New().String())
-	err = os.Mkdir(workingDir, 0755)
+	err = os.Mkdir(dir, 0755)
 	if err != nil {
 		log.Println(err)
 	}
@@ -119,8 +117,8 @@ func Run(dir, playlistURL string) *array.Array[Stream] {
 		strName := streams.Lookup(i)
 		strSegments := getStreamSegments(segments, strName)
 		if strSegments.Length() > 0 {
-			name := path.Join(workingDir, fmt.Sprintf("%s.mp4", strName))
-			combineSegmentsToFile(workingDir, name, strSegments)
+			name := path.Join(dir, fmt.Sprintf("%s.mp4", strName))
+			combineSegmentsToFile(dir, name, strSegments)
 			if _, err := os.Stat(name); errors.Is(err, os.ErrNotExist) {
 				log.Printf("%s does not exist", name)
 			}
