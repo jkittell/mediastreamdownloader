@@ -87,8 +87,14 @@ func contains(arr *array.Array[string], name string) bool {
 	return false
 }
 
-func Run(playlistURL string) *array.Array[Stream] {
+func Run(dir, playlistURL string) *array.Array[Stream] {
 	results := array.New[Stream]()
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		log.Println("%s does not exist", dir)
+		return results
+	}
+
 	streams := array.New[string]()
 	segments, err := parser.GetSegments(playlistURL)
 	if err != nil {
@@ -104,8 +110,8 @@ func Run(playlistURL string) *array.Array[Stream] {
 		}
 	}
 
-	dir := path.Join("/tmp", uuid.New().String())
-	err = os.Mkdir(dir, 0755)
+	workingDir := path.Join(dir, uuid.New().String())
+	err = os.Mkdir(workingDir, 0755)
 	if err != nil {
 		log.Println(err)
 	}
@@ -114,8 +120,8 @@ func Run(playlistURL string) *array.Array[Stream] {
 		strName := streams.Lookup(i)
 		strSegments := getStreamSegments(segments, strName)
 		if strSegments.Length() > 0 {
-			name := path.Join(dir, fmt.Sprintf("%s.mp4", strName))
-			combineSegmentsToFile(dir, name, strSegments)
+			name := path.Join(workingDir, fmt.Sprintf("%s.mp4", strName))
+			combineSegmentsToFile(workingDir, name, strSegments)
 			if _, err := os.Stat(name); errors.Is(err, os.ErrNotExist) {
 				log.Printf("%s does not exist", name)
 			}

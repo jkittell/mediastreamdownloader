@@ -8,12 +8,13 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		log.Println("Please provide the url of the stream to download")
+	if len(os.Args) < 3 {
+		log.Println("Please provide the directory to download the segments and url of the stream to download")
 		os.Exit(1)
 	}
-	url := os.Args[1]
-	res := downloader.Run(url)
+	dir := os.Args[1]
+	url := os.Args[2]
+	res := downloader.Run(dir, url)
 	for i := 0; i < res.Length(); i++ {
 		str := res.Lookup(i)
 		data, err := str.JSON()
