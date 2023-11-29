@@ -88,8 +88,9 @@ func contains(arr *array.Array[string], name string) bool {
 func Run(dir, playlistURL string) *array.Array[Stream] {
 	results := array.New[Stream]()
 
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		log.Println("%s does not exist", dir)
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		log.Println(err)
 		return results
 	}
 
@@ -106,11 +107,6 @@ func Run(dir, playlistURL string) *array.Array[Stream] {
 		} else {
 			streams.Push(seg.StreamName)
 		}
-	}
-
-	err = os.Mkdir(dir, 0755)
-	if err != nil {
-		log.Println(err)
 	}
 
 	for i := 0; i < streams.Length(); i++ {
